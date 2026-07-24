@@ -1,0 +1,18 @@
+{
+  "name": "phishing-defense-system",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev:dashboard": "npm run dev --workspace=@phishing-defense/web-dashboard",
+    "dev:backend": ".venv\\Scripts\\python.exe -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000",
+    "dev:extension": "npm run dev --workspace @phishing-defense/gmail-extension",
+    "build": "npm run build --workspaces --if-present",
+    "build:dashboard": "npm run build --workspace @phishing-defense/web-dashboard",
+    "build:extension": "npm run build --workspace=@phishing-defense/gmail-extension",
+    "lint": "npm run typecheck",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": { "node": ">=20" }
+}

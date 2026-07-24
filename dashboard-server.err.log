@@ -1,0 +1,10 @@
+npm error Lifecycle script `dev` failed with error:
+npm error code 4294967295
+npm error path C:\Users\dhanwil\OneDrive\Desktop\Thesis\phishing-defense-system\apps\web-dashboard
+npm error workspace @phishing-defense/web-dashboard@0.1.0
+npm error location C:\Users\dhanwil\OneDrive\Desktop\Thesis\phishing-defense-system\apps\web-dashboard
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vite --host 127.0.0.1
+eDrive\Desktop\Thesis\phishing-defense-system\apps\web-dashboard
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vite 127.0.0.1

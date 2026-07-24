@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Sentinel Gmail Phishing Defense",
+  "version": "0.2.0",
+  "description": "Research prototype that analyzes selected Gmail or mock email metadata with transparent rule-based results.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://mail.google.com/*", "http://localhost:8000/*", "http://127.0.0.1:8000/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "content_scripts": [{ "matches": ["https://mail.google.com/*"], "js": ["content.js"], "run_at": "document_idle" }],
+  "action": { "default_popup": "popup.html", "default_title": "Sentinel status" }
+}
