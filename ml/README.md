@@ -17,3 +17,13 @@ Dataset provenance and availability audits, annotation and reviewer validation, 
 The resolver also returns the immutable four-value availability mask `[a1, a2, a3, a4]` in canonical dimension order. `supported` and `absent` map to availability `1`; `unavailable` maps to `0`. The mask records whether behavioral evidence could be assessed. It does not encode behavioral presence, confidence, probability, phishing likelihood, or risk.
 
 Callers provide only the modality ID, two strict availability Booleans, and exactly one strict Boolean observation for each canonical dimension. The module does not accept or inspect email text, HTML, DOM elements, URLs, raw evidence, dataset records, evidence locators, or confidence values. Behavioral detection, routing, persistence, API integration, the `z1`-`z4` values, and the complete eight-value vector remain deferred.
+
+## Fail-closed result envelope
+
+`se_brl/result-envelope.v0.1.0.json` is the separate canonical lifecycle contract for the immutable analytical result envelope. Contract version `0.1.0` records compatible SE-BRL versions, the ordered analytical components, lifecycle statuses, and stable non-sensitive reason codes without duplicating the behavioral taxonomy.
+
+The envelope is infrastructure, not a model or prediction. The current safe factory returns `not_evaluated`: modality assessment is `completed` only when a compatible `AssessmentResult` exists, while behavior identification, phishing classification, calibration, and risk decision remain `not_evaluated` with explicit deferred-component reasons. The `completed` state is reserved for future use and is rejected unless every required component is completed, a compatible assessment exists, and no failure or missing-component reason is present.
+
+`review_required` and `failed` results fail closed. Review conditions use approved codes for unsupported modalities, missing evidence, invalid schemas, incompatible versions, or parser failure. Failed processing uses only `component_failure`, requires a failed component, and never exposes exception text. Neither lifecycle state contains a definitive classification, probability, confidence, risk tier, or intervention.
+
+Serialization returns a fresh primitive snake_case dictionary while preserving canonical component and dimension order. Raw artifacts, sensitive data, evidence locators, model attribution, and user susceptibility are excluded. This dictionary is not the final FastAPI wire format. Dataset processing, behavioral identification, model training, calibration, risk rules, evidence-reference formats, persistence, API contracts, and UI integration remain deferred; Goal 1 is not yet complete.

@@ -1,0 +1,63 @@
+{
+  "contract_version": "0.1.0",
+  "compatible_se_brl": {
+    "schema_version": "1.0.0",
+    "codebook_version": "0.1.0"
+  },
+  "overall_statuses": [
+    "completed",
+    "not_evaluated",
+    "review_required",
+    "failed"
+  ],
+  "component_statuses": [
+    "completed",
+    "not_evaluated",
+    "failed"
+  ],
+  "components": [
+    "modality_assessment",
+    "behavior_identification",
+    "phishing_classification",
+    "probability_calibration",
+    "risk_decision"
+  ],
+  "reason_codes": [
+    {
+      "id": "validated_model_not_integrated",
+      "applies_to": ["not_evaluated"]
+    },
+    {
+      "id": "calibrator_not_integrated",
+      "applies_to": ["not_evaluated"]
+    },
+    {
+      "id": "risk_rules_not_frozen",
+      "applies_to": ["not_evaluated"]
+    },
+    {
+      "id": "unsupported_modality",
+      "applies_to": ["review_required"]
+    },
+    {
+      "id": "missing_required_evidence",
+      "applies_to": ["review_required"]
+    },
+    {
+      "id": "invalid_schema",
+      "applies_to": ["review_required"]
+    },
+    {
+      "id": "incompatible_version",
+      "applies_to": ["review_required"]
+    },
+    {
+      "id": "parser_failure",
+      "applies_to": ["review_required"]
+    },
+    {
+      "id": "component_failure",
+      "applies_to": ["failed"]
+    }
+  ]
+}
