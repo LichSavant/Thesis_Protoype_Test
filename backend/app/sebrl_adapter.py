@@ -24,8 +24,8 @@ def to_sebrl_api_response(envelope: ResultEnvelope) -> SebrlResultEnvelopeRespon
     if not isinstance(envelope, ResultEnvelope):
         raise SebrlApiContractError("Expected an SE-BRL ResultEnvelope")
 
-    serialized = serialize_result_envelope(envelope)
     try:
+        serialized = serialize_result_envelope(envelope)
         return SebrlResultEnvelopeResponse.model_validate(serialized)
     except (
         ValidationError,

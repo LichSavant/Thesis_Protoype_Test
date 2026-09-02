@@ -5,11 +5,16 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+import backend.app.sebrl_adapter as adapter_module
 from backend.app.sebrl_adapter import SebrlApiContractError, to_sebrl_api_response
 from backend.app.sebrl_schemas import SebrlResultEnvelopeResponse
 from ml.se_brl import (
     AssessmentInput,
+    CodebookLoadError,
+    CodebookValidationError,
     ResultEnvelope,
+    ResultEnvelopeLoadError,
+    ResultEnvelopeValidationError,
     assess,
     failed_result,
     load_codebook,
@@ -413,6 +418,51 @@ def test_adapter_rejects_tampered_domain_envelope_without_partial_response() -> 
     object.__setattr__(envelope, "contract_version", "99.0.0")
     with pytest.raises(SebrlApiContractError, match="incompatible"):
         to_sebrl_api_response(envelope)
+
+
+@pytest.mark.parametrize(
+    "exception_type",
+    (
+        CodebookLoadError,
+        CodebookValidationError,
+        ResultEnvelopeLoadError,
+        ResultEnvelopeValidationError,
+    ),
+)
+def test_adapter_sanitizes_domain_serialization_failures(
+    monkeypatch: pytest.MonkeyPatch,
+    exception_type: type[Exception],
+) -> None:
+    internal_message = "internal contract artifact details must remain private"
+    validation_called = False
+    no_response = object()
+    result: object = no_response
+
+    def fail_serialization(envelope: ResultEnvelope) -> dict[str, Any]:
+        raise exception_type(internal_message)
+
+    def track_validation(value: object) -> object:
+        nonlocal validation_called
+        validation_called = True
+        return value
+
+    monkeypatch.setattr(adapter_module, "serialize_result_envelope", fail_serialization)
+    monkeypatch.setattr(
+        adapter_module.SebrlResultEnvelopeResponse,
+        "model_validate",
+        track_validation,
+    )
+
+    with pytest.raises(SebrlApiContractError) as captured:
+        result = to_sebrl_api_response(not_evaluated_result(canonical_modality()))
+
+    assert str(captured.value) == (
+        "SE-BRL result is incompatible with the backend API contract"
+    )
+    assert internal_message not in str(captured.value)
+    assert captured.value.__cause__ is None
+    assert result is no_response
+    assert validation_called is False
 
 
 def test_adapter_accepts_only_actual_domain_type() -> None:
