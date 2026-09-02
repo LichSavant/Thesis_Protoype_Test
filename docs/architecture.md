@@ -29,3 +29,16 @@ The content script debounces mutations by 600 ms and tracks each visible message
 `Analyzer` currently resolves to `RuleBasedAnalyzer`. `/api/v1/analyze-email` accepts schema version `1.0` and returns behaviors, recommendation, risk, classification, and `modelVersion: null`. Future BRL, text/URL feature extractors, ML classifier, and explanation generator should be introduced behind this boundary. Rule-based results must never be called ML predictions.
 
 See [gmail-integration.md](gmail-integration.md) for operational limitations.
+
+## SE-BRL API contract boundary
+
+The backend includes a strict, frozen Pydantic representation of the existing
+SE-BRL structural result envelope and a domain-to-Pydantic adapter. The adapter
+accepts only an immutable `ml.se_brl.ResultEnvelope`, uses the domain serializer,
+and revalidates versions, canonical ordering, statuses, and cross-field
+compatibility at the backend boundary.
+
+This boundary is not connected to a live endpoint. Existing email analysis
+remains rule-based, and the safe current SE-BRL analytical status is
+`not_evaluated`. FastAPI routing, shared TypeScript contracts, extension and UI
+integration, and ML models remain deferred.
