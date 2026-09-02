@@ -42,3 +42,14 @@ This boundary is not connected to a live endpoint. Existing email analysis
 remains rule-based, and the safe current SE-BRL analytical status is
 `not_evaluated`. FastAPI routing, shared TypeScript contracts, extension and UI
 integration, and ML models remain deferred.
+
+## Internal SE-BRL orchestration
+
+An internal backend service sits between future FastAPI routing and the existing
+domain-to-Pydantic adapter. It constructs only `not_evaluated`,
+`review_required`, and `failed` responses with canonical identifiers and fixed,
+non-sensitive limitations. No completed analytical path exists.
+
+The service is not connected to a FastAPI route, and existing email analysis
+remains rule-based. Models, calibration, frozen risk rules, shared TypeScript
+contracts, extension integration, and dashboard integration remain deferred.
