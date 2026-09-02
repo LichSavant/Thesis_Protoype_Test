@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from pydantic import ValidationError
+
 from ml.se_brl import (
     AssessmentResult,
     CodebookLoadError,
@@ -32,6 +34,7 @@ _BOUNDARY_EXCEPTIONS = (
     ResultEnvelopeLoadError,
     ResultEnvelopeValidationError,
     SebrlApiContractError,
+    ValidationError,
 )
 
 _SAFE_LIMITATION_BY_REASON = {

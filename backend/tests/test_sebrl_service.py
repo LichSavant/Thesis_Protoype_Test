@@ -369,6 +369,55 @@ def test_adapter_error_becomes_sanitized_service_error(
     assert result is no_response
 
 
+@pytest.mark.parametrize("method", ("not_evaluated", "review_required", "failed"))
+def test_final_response_validation_error_is_sanitized(
+    monkeypatch: pytest.MonkeyPatch,
+    method: str,
+) -> None:
+    original_validate = SebrlResultEnvelopeResponse.model_validate
+    internal_message = "private Pydantic validation details"
+    validation_calls = 0
+    no_response = object()
+    result: object = no_response
+
+    def fail_second_validation(
+        value: object,
+        *args: Any,
+        **kwargs: Any,
+    ) -> SebrlResultEnvelopeResponse:
+        nonlocal validation_calls
+        validation_calls += 1
+        if validation_calls == 2:
+            return original_validate({"contract_version": internal_message})
+        return original_validate(value, *args, **kwargs)
+
+    monkeypatch.setattr(
+        service_module.SebrlResultEnvelopeResponse,
+        "model_validate",
+        fail_second_validation,
+    )
+
+    service = SebrlAnalysisService()
+    with pytest.raises(SebrlServiceError) as captured:
+        if method == "not_evaluated":
+            result = service.not_evaluated(canonical_modalities()[0])
+        elif method == "review_required":
+            result = service.review_required(
+                canonical_modalities()[0], (canonical_review_reasons()[0],)
+            )
+        else:
+            result = service.failed(
+                canonical_modalities()[0], canonical_components()[0]
+            )
+
+    assert validation_calls == 2
+    assert str(captured.value) == "SE-BRL service could not safely complete"
+    assert internal_message not in str(captured.value)
+    assert captured.value.__cause__ is None
+    assert captured.value.__suppress_context__ is True
+    assert result is no_response
+
+
 def test_unapproved_programming_error_surfaces(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
