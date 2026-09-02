@@ -1,0 +1,196 @@
+{
+  "schema_version": "1.0.0",
+  "codebook_version": "0.1.0",
+  "instrument": {
+    "id": "se_brl",
+    "name": "Social Engineering Behavior Representation Layer",
+    "status": "pre_freeze",
+    "description": "A deterministic behavioral instrument and schema, not a trained model.",
+    "deferred_protocol_details": [
+      "Finer per-indicator operational rules",
+      "Examples",
+      "Overlap handling",
+      "Evidence-reference formats"
+    ]
+  },
+  "dimensions": [
+    {
+      "id": "pressure_threat_cues",
+      "name": "Pressure and Threat Cues",
+      "qualifying_boundary": [
+        "Immediate-action pressure",
+        "Adverse consequences",
+        "Penalties",
+        "Suspension",
+        "Loss",
+        "Limited availability"
+      ],
+      "exclusions": [
+        "Routine dates",
+        "Neutral security information",
+        "Ordinary availability notices without pressure"
+      ],
+      "indicators": [
+        { "id": "urgency", "name": "Urgency" },
+        { "id": "fear_threat", "name": "Fear or Threat" },
+        { "id": "scarcity", "name": "Scarcity" }
+      ]
+    },
+    {
+      "id": "lure_attention_cues",
+      "name": "Lure and Attention Cues",
+      "qualifying_boundary": [
+        "Incomplete or attention-provoking information",
+        "Promised prizes",
+        "Refunds",
+        "Employment",
+        "Benefits",
+        "Incentives intended to induce interaction"
+      ],
+      "exclusions": [
+        "Ordinary informative content",
+        "Routine compensation",
+        "Verified promotions without deceptive inducement"
+      ],
+      "indicators": [
+        { "id": "curiosity", "name": "Curiosity" },
+        { "id": "reward_lure", "name": "Reward or Lure" }
+      ]
+    },
+    {
+      "id": "trust_identity_manipulation",
+      "name": "Trust and Identity Manipulation",
+      "qualifying_boundary": [
+        "Invocation of institutional power",
+        "Inconsistent claimed identity",
+        "Misleading brand use",
+        "Instructions to conceal the interaction",
+        "Instructions to avoid independent verification"
+      ],
+      "exclusions": [
+        "Legitimate authority",
+        "Authorized delivery",
+        "Aligned brand use",
+        "Normal privacy notices"
+      ],
+      "indicators": [
+        { "id": "authority", "name": "Authority" },
+        { "id": "impersonation", "name": "Impersonation" },
+        { "id": "brand_exploitation", "name": "Brand Exploitation" },
+        { "id": "confidentiality_isolation", "name": "Confidentiality or Isolation" }
+      ]
+    },
+    {
+      "id": "requested_action_consequence",
+      "name": "Requested Action and Consequence",
+      "qualifying_boundary": [
+        "Requests to click, reply, download, visit, or submit data",
+        "Requests to disclose protected information",
+        "Requests to make payments",
+        "Requests to transfer funds",
+        "Requests to purchase",
+        "Requests to modify financial accounts"
+      ],
+      "exclusions": [
+        "Passive information",
+        "Non-sensitive input",
+        "Verified transaction notices without a requested action"
+      ],
+      "indicators": [
+        { "id": "call_to_action", "name": "Call-to-Action" },
+        { "id": "credential_sensitive_data_request", "name": "Credential or Sensitive-Data Request" },
+        { "id": "financial_action_request", "name": "Financial-Action Request" }
+      ]
+    }
+  ],
+  "evidence_states": [
+    {
+      "id": "supported",
+      "definition": "Required evidence is assessable and qualifying evidence is observed."
+    },
+    {
+      "id": "absent",
+      "definition": "Required evidence is assessable but qualifying evidence is not observed."
+    },
+    {
+      "id": "unavailable",
+      "definition": "The modality or required field prevents assessment."
+    }
+  ],
+  "support_codes": [
+    {
+      "id": "A",
+      "assessment_kind": "assessable",
+      "definition": "Assessable when required content exists."
+    },
+    {
+      "id": "A*",
+      "assessment_kind": "conditionally_assessable",
+      "definition": "Assessable only with required identity/brand fields or visual/structural evidence."
+    },
+    {
+      "id": "U",
+      "assessment_kind": "unavailable",
+      "definition": "Unavailable from bare URLs or technical-only records."
+    }
+  ],
+  "modalities": [
+    {
+      "id": "content_bearing_email",
+      "name": "Content-Bearing Email",
+      "required_evidence_rule": "Content-dependent dimensions are assessable only when required email content exists; trust and identity manipulation additionally requires identity/brand fields or visual/structural evidence.",
+      "support_by_dimension": {
+        "pressure_threat_cues": "A",
+        "lure_attention_cues": "A",
+        "trust_identity_manipulation": "A*",
+        "requested_action_consequence": "A"
+      }
+    },
+    {
+      "id": "content_bearing_webpage",
+      "name": "Content-Bearing Webpage",
+      "required_evidence_rule": "Content-dependent dimensions are assessable only when required webpage content exists; trust and identity manipulation additionally requires identity/brand fields or visual/structural evidence.",
+      "support_by_dimension": {
+        "pressure_threat_cues": "A",
+        "lure_attention_cues": "A",
+        "trust_identity_manipulation": "A*",
+        "requested_action_consequence": "A"
+      }
+    },
+    {
+      "id": "standalone_url",
+      "name": "Stand-Alone URL",
+      "required_evidence_rule": "A bare URL does not permit assessment of content-dependent behavioral dimensions.",
+      "support_by_dimension": {
+        "pressure_threat_cues": "U",
+        "lure_attention_cues": "U",
+        "trust_identity_manipulation": "U",
+        "requested_action_consequence": "U"
+      }
+    },
+    {
+      "id": "engineered_technical_record",
+      "name": "Engineered Technical Record",
+      "required_evidence_rule": "Engineered technical records remain technical-only. If qualifying email or webpage content exists, future routing must classify the artifact as content-bearing rather than as an engineered technical record.",
+      "support_by_dimension": {
+        "pressure_threat_cues": "U",
+        "lure_attention_cues": "U",
+        "trust_identity_manipulation": "U",
+        "requested_action_consequence": "U"
+      }
+    }
+  ],
+  "vector_ordering": {
+    "dimension_order": [
+      "pressure_threat_cues",
+      "lure_attention_cues",
+      "trust_identity_manipulation",
+      "requested_action_consequence"
+    ],
+    "future_structure": ["z1", "z2", "z3", "z4", "a1", "a2", "a3", "a4"],
+    "confidence_slots": ["z1", "z2", "z3", "z4"],
+    "availability_slots": ["a1", "a2", "a3", "a4"],
+    "implementation_status": "metadata_only",
+    "note": "No confidence, threshold, mask, probability, or calibrated output is generated by this codebook."
+  }
+}
