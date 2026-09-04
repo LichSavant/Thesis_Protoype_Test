@@ -5,12 +5,15 @@ from .config import get_settings
 from .analyzers import RuleBasedAnalyzer
 from .repository import TrackedEmailRepository
 from .schemas import AnalyzeEmailRequest, AnalyzeEmailResponse, EmailOpenRequest, EmailScanResponse, HealthResponse, ScanFeedbackRequest, TrackedEmailResponse
+from .sebrl_schemas import SebrlResultEnvelopeResponse
+from .sebrl_service import SebrlAnalysisService, SebrlServiceError
 from .services import EmailInteractionService
 
 settings = get_settings()
 repository = TrackedEmailRepository(settings.database_url)
 service = EmailInteractionService(repository, settings.email_open_deduplication_seconds)
 analyzer = RuleBasedAnalyzer()
+sebrl_analysis_service = SebrlAnalysisService()
 
 app = FastAPI(title="Phishing Defense API", version="0.2.0")
 app.add_middleware(
@@ -29,6 +32,18 @@ def health() -> HealthResponse:
     return HealthResponse(
         status="ok", persistence="sqlite-local-development", deduplication_window_seconds=settings.email_open_deduplication_seconds
     )
+
+
+@app.get("/api/v1/se-brl/status", response_model=SebrlResultEnvelopeResponse)
+def get_sebrl_status() -> SebrlResultEnvelopeResponse:
+    try:
+        return sebrl_analysis_service.not_evaluated(
+            modality_id="content_bearing_email"
+        )
+    except SebrlServiceError:
+        raise HTTPException(
+            status_code=503, detail="SE-BRL service unavailable"
+        ) from None
 
 
 @app.post("/api/v1/interactions/email-open", response_model=TrackedEmailResponse)

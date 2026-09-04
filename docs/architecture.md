@@ -38,10 +38,11 @@ accepts only an immutable `ml.se_brl.ResultEnvelope`, uses the domain serializer
 and revalidates versions, canonical ordering, statuses, and cross-field
 compatibility at the backend boundary.
 
-This boundary is not connected to a live endpoint. Existing email analysis
-remains rule-based, and the safe current SE-BRL analytical status is
-`not_evaluated`. FastAPI routing, shared TypeScript contracts, extension and UI
-integration, and ML models remain deferred.
+`GET /api/v1/se-brl/status` exposes this internal fail-closed SE-BRL foundation.
+For the content-bearing email workflow, it currently returns only
+`not_evaluated`. This is a readiness/status boundary, not a phishing-analysis
+endpoint. The existing `/api/v1/analyze-email` endpoint remains rule-based and
+separate.
 
 ## Internal SE-BRL orchestration
 
@@ -50,6 +51,7 @@ domain-to-Pydantic adapter. It constructs only `not_evaluated`,
 `review_required`, and `failed` responses with canonical identifiers and fixed,
 non-sensitive limitations. No completed analytical path exists.
 
-The service is not connected to a FastAPI route, and existing email analysis
-remains rule-based. Models, calibration, frozen risk rules, shared TypeScript
-contracts, extension integration, and dashboard integration remain deferred.
+Dataset audits, evidence rules, trained models, calibration, thresholds,
+completed outputs, extension integration, and dashboard integration remain
+deferred to later phases. Step 1 refers only to the software foundation; it does
+not mean the complete research system is finished.
